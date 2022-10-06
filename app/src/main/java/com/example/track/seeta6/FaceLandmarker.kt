@@ -42,18 +42,18 @@ class FaceLandmarker {
         masks: IntArray?
     )
 
-    fun loadEngine(detectModelFile: String?) {
-        if (null == detectModelFile || "" == detectModelFile) {
+    fun loadEngine(landmarkerModelFile: String?) {
+        if (null == landmarkerModelFile || "" == landmarkerModelFile) {
             Log.w(
                 TAG,
                 "detectModelFile file path is invalid!"
             )
             return
         }
-        var model = detectModelFile.split("").toTypedArray()
+        var model = landmarkerModelFile.split("").toTypedArray()
         var setting = SeetaModelSetting(0, model, SeetaDevice.SEETA_DEVICE_AUTO)
-        Log.w("dovt1: ", "detectModelFile: " + detectModelFile)
-        this.construct1(detectModelFile)
+        Log.w("dovt1: ", "detectModelFile: " + landmarkerModelFile)
+        this.construct1(landmarkerModelFile)
     }
 
     fun loadEngine() {
@@ -64,7 +64,7 @@ class FaceLandmarker {
             )
         }
         Log.w("dovt1: ", "loadEngine: " + getPath("face_detector.csta", context))
-        loadEngine(getPath("face_detector.csta", context))
+        loadEngine(getPath("face_landmarker_pts5.csta", context))
     }
 
     fun getPath(file: String?, context: Context): String? {
