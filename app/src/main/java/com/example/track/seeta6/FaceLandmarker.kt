@@ -18,8 +18,8 @@ class FaceLandmarker {
 
     var impl: Long = 0
     @Throws(Throwable::class)
-    private external fun construct(seeting: SeetaModelSetting)
-    private external fun construct1(model: String)
+    external fun construct(seeting: SeetaModelSetting)
+    external fun construct1(model: String)
 
     external fun dispose()
     @Throws(Throwable::class)
@@ -32,7 +32,7 @@ class FaceLandmarker {
     external fun mark(
         imageData: SeetaImageData?,
         seetaRect: SeetaRect?,
-        pointFS: Array<SeetaPointF?>?
+        pointFS: Array<SeetaPointF>?
     )
 
     external fun mark1(
@@ -50,9 +50,6 @@ class FaceLandmarker {
             )
             return
         }
-        var model = landmarkerModelFile.split("").toTypedArray()
-        var setting = SeetaModelSetting(0, model, SeetaDevice.SEETA_DEVICE_AUTO)
-        Log.w("dovt1: ", "detectModelFile: " + landmarkerModelFile)
         this.construct1(landmarkerModelFile)
     }
 

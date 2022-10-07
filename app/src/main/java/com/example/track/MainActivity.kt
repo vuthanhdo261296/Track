@@ -11,8 +11,7 @@ import android.view.SurfaceView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.track.seeta6.FaceTracker
-import com.example.track.seeta6.SeetaImageData
+import com.example.track.seeta6.*
 import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
@@ -22,6 +21,7 @@ class MainActivity : AppCompatActivity() {
     var surfaceView: SurfaceView? = null
     var surfaceView_view: SurfaceView? = null
     var faceTracker: FaceTracker? = null
+    var faceLandmarker: FaceLandmarker? = null
     var canvas: Canvas? = null
     var cameraWidth = 640
     var cameraHeight = 480
@@ -42,6 +42,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         faceTracker = FaceTracker(this@MainActivity, cameraWidth, cameraHeight)
+        faceLandmarker = FaceLandmarker(this@MainActivity)
 
         surfaceholder = surfaceView?.holder
         surfaceholder?.addCallback(callback)
@@ -70,7 +71,18 @@ class MainActivity : AppCompatActivity() {
 
                     if (seetaTrackingFaceInfos?.size!! > 0) {
 
+                        var seetaRect = SeetaRect()
+                        var seetaPointFs = Array(5) {SeetaPointF()}
+
                         for (stTFInfo in seetaTrackingFaceInfos!!) {
+
+                            seetaRect.x = stTFInfo!!.x
+                            seetaRect.y = stTFInfo.y
+                            seetaRect.width = stTFInfo.width
+                            seetaRect.height = stTFInfo.height
+                            faceLandmarker?.mark(seetaImageData, seetaRect, seetaPointFs)
+                            Log.d("dovt1: ", "seetaPointFs: " + seetaPointFs.size)
+
                             val maxRect = Rect(
                                 stTFInfo!!.x,
                                 stTFInfo.y,

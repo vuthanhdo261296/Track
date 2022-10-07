@@ -4,7 +4,8 @@
 #include "include/FaceLandmarker.h"
 #include <include/need.h>
 
-using NativeClass = seeta::FaceLandmarker;
+using namespace seeta::SEETA_FACE_LANDMARKER_NAMESPACE_VERSION;
+using NativeClass = seeta::SEETA_FACE_LANDMARKER_NAMESPACE_VERSION::FaceLandmarker;
 
 template<typename T>
 static void delete_array(T * ptr) {
@@ -23,9 +24,9 @@ JNIEXPORT void JNICALL Java_com_example_track_seeta6_FaceLandmarker_construct__L
 	jfieldID setting_field_id = env->GetFieldID(setting_class, "id", "I");
     jint jid = env->GetIntField(model, setting_field_id);
 
-	jfieldID setting_field_device = env->GetFieldID(setting_class, "device", "Lcom/seeta/sdk/SeetaDevice;");
+	jfieldID setting_field_device = env->GetFieldID(setting_class, "device", "Lcom/example/track/seeta6/SeetaDevice;");
     jobject device_obj = env->GetObjectField(model, setting_field_device);
-	jclass device_class = env->FindClass("com/seeta/sdk/SeetaDevice");
+	jclass device_class = env->FindClass("com/example/track/seeta6/SeetaDevice");
         
     jmethodID getVal = env->GetMethodID(device_class, "getValue", "()I");
      jint device_id = env->CallIntMethod(device_obj, getVal);
@@ -66,18 +67,23 @@ JNIEXPORT void JNICALL Java_com_example_track_seeta6_FaceLandmarker_construct__L
 	env->SetLongField(self, self_filed_impl, self_impl);  
   }
   
-  JNIEXPORT void JNICALL Java_com_example_track_seeta6_FaceLandmarker_construct1__Ljava_lang_String_2Ljava_lang_String_2I
+  JNIEXPORT void Java_com_example_track_seeta6_FaceLandmarker_construct1
   (JNIEnv *env, jobject self, jstring model)
   {
 	  std::string native_model = jni_convert_string(env, model);
-	 std::string native_device = jni_convert_string(env, device);
+	 //std::string native_device = jni_convert_string(env, device);
 	 
-	seeta::ModelSetting model_setting;
+//	seeta::ModelSetting model_setting;
 //	model_setting.device = native_device.c_str();
 //	model_setting.id = id;
-    model_setting.device = seeta::ModelSetting::AUTO;
-    model_setting.id = 0;
-	model_setting.append(native_model);
+//    model_setting.device = seeta::ModelSetting::AUTO;
+//    model_setting.id = 0;
+//	model_setting.append(native_model);
+
+	seeta::ModelSetting::Device deviceTest = seeta::ModelSetting::AUTO;
+    int idTest = 0;
+
+	seeta::ModelSetting model_setting(native_model, deviceTest, idTest);
 	
 	NativeClass *native_impl = nullptr;
 	try
@@ -129,7 +135,7 @@ JNIEXPORT void JNICALL Java_com_example_track_seeta6_FaceLandmarker_construct__L
 	return native_impl->number();
   }
   
-JNIEXPORT void JNICALL Java_com_example_track_seeta6_FaceLandmarker_mark__Lcom_seeta_sdk_SeetaImageData_2Lcom_seeta_sdk_SeetaRect_2_3Lcom_seeta_sdk_SeetaPointF_2
+JNIEXPORT void Java_com_example_track_seeta6_FaceLandmarker_mark
   (JNIEnv *env, jobject self, jobject image, jobject face, jobjectArray points)
   {
 	jclass self_class = env->GetObjectClass(self);
@@ -160,7 +166,7 @@ JNIEXPORT void JNICALL Java_com_example_track_seeta6_FaceLandmarker_mark__Lcom_s
 
   }
   
-  JNIEXPORT void JNICALL Java_com_example_track_seeta6_FaceLandmarker_mark__Lcom_seeta_sdk_SeetaImageData_2Lcom_seeta_sdk_SeetaRect_2_3Lcom_seeta_sdk_SeetaPointF_2_3I
+  JNIEXPORT void JNICALL Java_com_example_track_seeta6_FaceLandmarker_mark1
   (JNIEnv *env, jobject self, jobject image, jobject face, jobjectArray points, jintArray mask)
   {
 	jclass self_class = env->GetObjectClass(self);

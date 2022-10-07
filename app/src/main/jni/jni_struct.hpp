@@ -166,7 +166,7 @@ static SeetaRect jni_convert_face_info(JNIEnv* env, jobject info)
 
 static jobject jni_convert(JNIEnv *env, const SeetaPointF &native_point)
 {
-	jclass Point_class = env->FindClass("com/seeta/sdk/SeetaPointF");
+	jclass Point_class = env->FindClass("com/example/track/seeta6/SeetaPointF");
 	jfieldID Point_field_x = env->GetFieldID(Point_class, "x", "D");
 	jfieldID Point_field_y = env->GetFieldID(Point_class, "y", "D");
 	jmethodID Point_method_ctor = env->GetMethodID(Point_class, "<init>", "()V");

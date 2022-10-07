@@ -20,7 +20,7 @@ JNIEXPORT void JNICALL Java_com_example_track_seeta6_FaceLandmarker_construct__L
  * Method:    construct
  * Signature: (Ljava/lang/String;Ljava/lang/String;I)V
  */
-JNIEXPORT void JNICALL Java_com_example_track_seeta6_FaceLandmarker_construct1__Ljava_lang_String_2Ljava_lang_String_2I
+JNIEXPORT void JNICALL Java_com_example_track_seeta6_FaceLandmarker_construct1
   (JNIEnv *, jobject, jstring);
 
 /*
@@ -44,7 +44,7 @@ JNIEXPORT jint JNICALL Java_com_example_track_seeta6_FaceLandmarker_number
  * Method:    mark
  * Signature: (Lcom/seeta/sdk/SeetaImageData;Lcom/seeta/sdk/SeetaRect;[Lcom/seeta/sdk/SeetaPointF;)V
  */
-JNIEXPORT void JNICALL Java_com_example_track_seeta6_FaceLandmarker_mark__Lcom_seeta_sdk_SeetaImageData_2Lcom_seeta_sdk_SeetaRect_2_3Lcom_seeta_sdk_SeetaPointF_2
+JNIEXPORT void JNICALL Java_com_example_track_seeta6_FaceLandmarker_mark
   (JNIEnv *, jobject, jobject, jobject, jobjectArray);
 
 /*
@@ -52,7 +52,7 @@ JNIEXPORT void JNICALL Java_com_example_track_seeta6_FaceLandmarker_mark__Lcom_s
  * Method:    mark
  * Signature: (Lcom/seeta/sdk/SeetaImageData;Lcom/seeta/sdk/SeetaRect;[Lcom/seeta/sdk/SeetaPointF;[I)V
  */
-JNIEXPORT void JNICALL Java_com_example_track_seeta6_FaceLandmarker_mark1__Lcom_seeta_sdk_SeetaImageData_2Lcom_seeta_sdk_SeetaRect_2_3Lcom_seeta_sdk_SeetaPointF_2_3I
+JNIEXPORT void JNICALL Java_com_example_track_seeta6_FaceLandmarker_mark1
   (JNIEnv *, jobject, jobject, jobject, jobjectArray, jintArray);
 
 #ifdef __cplusplus
