@@ -97,6 +97,29 @@ class MainActivity : AppCompatActivity() {
                                     if (canvas != null) {
                                         synchronized(surfaceView_view!!.holder) {
                                             canvas!!.drawColor(0, PorterDuff.Mode.CLEAR)
+
+                                            if(seetaPointFs.size > 0){
+                                                for(seetaPointF in seetaPointFs){
+
+                                                    var adjustedPoint: SeetaPointF? = DrawUtils().adjustPoint(
+                                                        seetaPointF,
+                                                        cameraWidth,
+                                                        cameraHeight,
+                                                        canvas!!.getWidth(),
+                                                        canvas!!.getHeight(),
+                                                        90,
+                                                        1
+                                                    )
+
+                                                    DrawUtils().drawSeetaPointF(
+                                                        canvas,
+                                                        adjustedPoint,
+                                                        Color.RED,
+                                                        10
+                                                    )
+                                                }
+                                            }
+
                                             val rect = Rect(
                                                 maxRect.left,
                                                 maxRect.top,
