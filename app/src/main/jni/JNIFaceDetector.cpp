@@ -24,12 +24,12 @@ static void delete_obj(T * ptr) {
     delete ptr;
 }
 
-JNIEXPORT jstring JNICALL Java_com_example_dovtseetaface6_seeta6_FaceDetector_helloWorld(JNIEnv *env, jobject self)
+JNIEXPORT jstring JNICALL Java_com_example_track_seeta6_FaceDetector_helloWorld(JNIEnv *env, jobject self)
 {
     return env->NewStringUTF("helloW");
 }
 
-JNIEXPORT void JNICALL Java_com_example_dovtseetaface6_seeta6_FaceDetector_construct__Lcom_example_dovtseetaface6_seeta6_SeetaModelSetting_2
+JNIEXPORT void JNICALL Java_com_example_track_seeta6_FaceDetector_construct__Lcom_example_track_seeta6_SeetaModelSetting_2
   (JNIEnv *env, jobject self, jobject model)
   {
 	jclass setting_class = env->GetObjectClass(model);
@@ -37,9 +37,9 @@ JNIEXPORT void JNICALL Java_com_example_dovtseetaface6_seeta6_FaceDetector_const
         jint jid = env->GetIntField(model, setting_field_id);
 
         //std::cout << "jid:" << jid << std::endl;
-	jfieldID setting_field_device = env->GetFieldID(setting_class, "device", "Lcom/example/dovtseetaface6/seeta6/SeetaDevice;");
+	jfieldID setting_field_device = env->GetFieldID(setting_class, "device", "Lcom/example/track/seeta6/SeetaDevice;");
         jobject device_obj = env->GetObjectField(model, setting_field_device);
-	jclass device_class = env->FindClass("com/example/dovtseetaface6/seeta6/SeetaDevice");
+	jclass device_class = env->FindClass("com/example/track/seeta6/SeetaDevice");
         
         jmethodID getVal = env->GetMethodID(device_class, "getValue", "()I");
         jint device_id = env->CallIntMethod(device_obj, getVal);
@@ -91,7 +91,7 @@ JNIEXPORT void JNICALL Java_com_example_dovtseetaface6_seeta6_FaceDetector_const
 	env->SetLongField(self, self_filed_impl, self_impl); 
   }
 
-JNIEXPORT void JNICALL Java_com_example_dovtseetaface6_seeta6_FaceDetector_construct1
+JNIEXPORT void JNICALL Java_com_example_track_seeta6_FaceDetector_construct1
   (JNIEnv *env, jobject self, jstring model)
   {
 	  jclass self_class = env->GetObjectClass(self);
@@ -119,7 +119,7 @@ JNIEXPORT void JNICALL Java_com_example_dovtseetaface6_seeta6_FaceDetector_const
 	env->SetLongField(self, self_filed_impl, self_impl); 
   }
 
-  JNIEXPORT void JNICALL Java_com_example_dovtseetaface6_seeta6_FaceDetector_dispose
+  JNIEXPORT void JNICALL Java_com_example_track_seeta6_FaceDetector_dispose
   (JNIEnv *env, jobject self)
   {
 	jclass self_class = env->GetObjectClass(self);
@@ -136,7 +136,7 @@ JNIEXPORT void JNICALL Java_com_example_dovtseetaface6_seeta6_FaceDetector_const
   }
  
  
-  JNIEXPORT jobjectArray JNICALL Java_com_example_dovtseetaface6_seeta6_FaceDetector_Detect
+  JNIEXPORT jobjectArray JNICALL Java_com_example_track_seeta6_FaceDetector_Detect
   (JNIEnv *env, jobject self, jobject image)
   {
 	jclass self_class = env->GetObjectClass(self);
@@ -170,7 +170,7 @@ JNIEXPORT void JNICALL Java_com_example_dovtseetaface6_seeta6_FaceDetector_const
   }
 
 
-  JNIEXPORT void JNICALL Java_com_example_dovtseetaface6_seeta6_FaceDetector_set
+  JNIEXPORT void JNICALL Java_com_example_track_seeta6_FaceDetector_set
   (JNIEnv *env, jobject self, jobject property, jdouble value)
   {
         jclass enumclass= env->GetObjectClass(property);
@@ -193,7 +193,7 @@ JNIEXPORT void JNICALL Java_com_example_dovtseetaface6_seeta6_FaceDetector_const
   }
 
 
-  JNIEXPORT jdouble JNICALL Java_com_example_dovtseetaface6_seeta6_FaceDetector_get
+  JNIEXPORT jdouble JNICALL Java_com_example_track_seeta6_FaceDetector_get
   (JNIEnv *env, jobject self, jobject property)
   {
         jclass enumclass= env->GetObjectClass(property);

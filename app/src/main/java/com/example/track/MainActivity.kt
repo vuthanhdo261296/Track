@@ -22,6 +22,7 @@ class MainActivity : AppCompatActivity() {
     var surfaceView_view: SurfaceView? = null
     var faceTracker: FaceTracker? = null
     var faceLandmarker: FaceLandmarker? = null
+    var faceDetector: FaceDetector? = null
     var canvas: Canvas? = null
     var cameraWidth = 640
     var cameraHeight = 480
@@ -41,6 +42,7 @@ class MainActivity : AppCompatActivity() {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 999)
         }
 
+        faceDetector = FaceDetector(this@MainActivity)
         faceTracker = FaceTracker(this@MainActivity, cameraWidth, cameraHeight)
         faceLandmarker = FaceLandmarker(this@MainActivity)
 

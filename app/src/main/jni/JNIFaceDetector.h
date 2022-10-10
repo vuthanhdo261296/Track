@@ -8,14 +8,14 @@
 extern "C" {
 #endif
 //test helloWorld
-JNIEXPORT jstring JNICALL Java_com_example_dovtseetaface6_seeta6_FaceDetector_helloWorld(JNIEnv* env, jobject self);
+JNIEXPORT jstring JNICALL Java_com_example_track_seeta6_FaceDetector_helloWorld(JNIEnv* env, jobject self);
 
 /*
  * Class:     com_seeta_sdk_FaceDetector
  * Method:    construct
  * Signature: (Lcom/seeta/sdk/SeetaModelSetting;)V
  */
-JNIEXPORT void JNICALL Java_com_example_dovtseetaface6_seeta6_FaceDetector_construct__Lcom_example_dovtseetaface6_seeta6_SeetaModelSetting_2
+JNIEXPORT void JNICALL Java_com_example_track_seeta6_FaceDetector_construct__Lcom_example_track_seeta6_SeetaModelSetting_2
   (JNIEnv *, jobject, jobject);
 
 /*
@@ -24,7 +24,7 @@ JNIEXPORT void JNICALL Java_com_example_dovtseetaface6_seeta6_FaceDetector_const
  * Signature: (Ljava/lang/String;Ljava/lang/String;I)V
  */
 
-JNIEXPORT void JNICALL Java_com_example_dovtseetaface6_seeta6_FaceDetector_construct1
+JNIEXPORT void JNICALL Java_com_example_track_seeta6_FaceDetector_construct1
   (JNIEnv *, jobject, jstring);
 
 /*
@@ -32,7 +32,7 @@ JNIEXPORT void JNICALL Java_com_example_dovtseetaface6_seeta6_FaceDetector_const
  * Method:    dispose
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_com_example_dovtseetaface6_seeta6_FaceDetector_dispose
+JNIEXPORT void JNICALL Java_com_example_track_seeta6_FaceDetector_dispose
   (JNIEnv *, jobject);
 
 /*
@@ -40,7 +40,7 @@ JNIEXPORT void JNICALL Java_com_example_dovtseetaface6_seeta6_FaceDetector_dispo
  * Method:    Detect
  * Signature: (Lcom/seeta/sdk/SeetaImageData;)[Lcom/seeta/sdk/SeetaRect;
  */
-JNIEXPORT jobjectArray JNICALL Java_com_example_dovtseetaface6_seeta6_FaceDetector_Detect
+JNIEXPORT jobjectArray JNICALL Java_com_example_track_seeta6_FaceDetector_Detect
   (JNIEnv *, jobject, jobject);
 
 /*
@@ -48,7 +48,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_example_dovtseetaface6_seeta6_FaceDetect
  * Method:    set
  * Signature: (Lcom/seeta/sdk/FaceDetector/Property;D)V
  */
-JNIEXPORT void JNICALL Java_com_example_dovtseetaface6_seeta6_FaceDetector_set
+JNIEXPORT void JNICALL Java_com_example_track_seeta6_FaceDetector_set
   (JNIEnv *, jobject, jobject, jdouble);
 
 /*
@@ -56,7 +56,7 @@ JNIEXPORT void JNICALL Java_com_example_dovtseetaface6_seeta6_FaceDetector_set
  * Method:    get
  * Signature: (Lcom/seeta/sdk/FaceDetector/Property;)D
  */
-JNIEXPORT jdouble JNICALL Java_com_example_dovtseetaface6_seeta6_FaceDetector_get
+JNIEXPORT jdouble JNICALL Java_com_example_track_seeta6_FaceDetector_get
   (JNIEnv *, jobject, jobject);
 
 #ifdef __cplusplus
