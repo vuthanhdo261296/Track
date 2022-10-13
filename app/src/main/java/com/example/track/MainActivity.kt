@@ -2,6 +2,7 @@ package com.example.track
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.graphics.*
 import android.hardware.Camera
 import android.hardware.Camera.PictureCallback
@@ -20,6 +21,7 @@ import com.example.track.seeta6.*
 import com.google.gson.Gson
 import java.io.IOException
 import java.util.*
+import kotlin.system.measureTimeMillis
 
 
 class MainActivity : AppCompatActivity() {
@@ -32,7 +34,7 @@ class MainActivity : AppCompatActivity() {
     var container: FrameLayout? = null
     var faceTracker: FaceTracker? = null
     var faceLandmarker: FaceLandmarker? = null
-    var faceDetector: FaceDetector? = null
+    //var faceDetector: FaceDetector? = null
     var faceRecognizer: FaceRecognizer? = null
     var db: AppDatabase? = null
     var canvas: Canvas? = null
@@ -56,7 +58,7 @@ class MainActivity : AppCompatActivity() {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 999)
         }
 
-        faceDetector = FaceDetector(this@MainActivity)
+        //faceDetector = FaceDetector(this@MainActivity)
         faceTracker = FaceTracker(this@MainActivity, cameraWidth, cameraHeight)
         faceLandmarker = FaceLandmarker(this@MainActivity)
         faceRecognizer = FaceRecognizer(this@MainActivity)
@@ -75,35 +77,45 @@ class MainActivity : AppCompatActivity() {
             try {
                 camera = Camera.open(1)
                 var parameters = camera?.getParameters()
+                if(resources.configuration.orientation != Configuration.ORIENTATION_LANDSCAPE){
+                    parameters?.set("orientation", "portrait")
+                    camera?.setDisplayOrientation(90)
+                    parameters?.setRotation(90)
+                }else{
+                    parameters?.set("orientation", "landscape")
+                    camera?.setDisplayOrientation(0)
+                    parameters?.setRotation(0)
+                }
+                parameters?.setPictureSize(cameraWidth, cameraHeight)
                 parameters?.setPreviewSize(cameraWidth, cameraHeight)
                 camera?.setParameters(parameters)
-                camera?.setDisplayOrientation(90)
                 camera?.setPreviewDisplay(holder)
+
+                var feature = FloatArray(faceRecognizer!!.GetExtractFeatureSize())
+                var featureCapture = FloatArray(faceRecognizer!!.GetExtractFeatureSize())
+
                 camera?.setPreviewCallback { bytes, camera ->
 
                     var newBytes = yuv2rgb(bytes, cameraWidth, cameraHeight)
-
                     var seetaImageData = SeetaImageData(cameraWidth, cameraHeight, 3)
-                    seetaImageData!!.data = newBytes.clone()
+                    seetaImageData!!.data = newBytes
 
                     var seetaTrackingFaceInfos = faceTracker?.Track(seetaImageData)
 
                     if (seetaTrackingFaceInfos?.size!! > 0) {
-                        register("dovt", seetaImageData)
                         var seetaRect = SeetaRect()
                         var seetaPointFs = Array(5) {SeetaPointF()}
-                        var features = FloatArray(faceRecognizer!!.GetExtractFeatureSize())
 
                         for (stTFInfo in seetaTrackingFaceInfos!!) {
-
                             seetaRect.x = stTFInfo!!.x
                             seetaRect.y = stTFInfo.y
                             seetaRect.width = stTFInfo.width
                             seetaRect.height = stTFInfo.height
+
                             faceLandmarker?.mark(seetaImageData, seetaRect, seetaPointFs)
-                            faceRecognizer?.Extract(seetaImageData, seetaPointFs, features)
-                            var sim = faceRecognizer?.CalculateSimilarity( features, features)
-                            Log.d("dovt5", "sim: " + sim)
+                            faceRecognizer?.Extract(seetaImageData, seetaPointFs, feature)
+                            var sim = faceRecognizer?.CalculateSimilarity( featureCapture, feature)
+                            Log.d("dovt", "sim: " + sim)
                             if (sim != null && sim >=0.74) {
 
                             }
@@ -186,7 +198,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 camera?.startPreview()
                 btnCapture?.setOnClickListener{
-                    var featureCapture = takePictureInternal(camera!!)
+                    featureCapture = takePictureInternal(camera!!)
                 }
             } catch (e: IOException) {
                 Log.d("TAG", "Error setting camera preview: " + e.message)
@@ -198,11 +210,12 @@ class MainActivity : AppCompatActivity() {
 
             camera?.takePicture(null, null, Camera.PictureCallback { data, camera ->
                 val gson = Gson()
-
-                var newBytes = yuv2rgb(data, cameraWidth, cameraHeight)
+                var bmp = jpegToBitmap(data)
+                var face1Bytes = getNV21(bmp.width, bmp.height, bmp)
+                var newBytes = yuv2rgb(face1Bytes, cameraWidth, cameraHeight)
 
                 var seetaImageData = SeetaImageData(cameraWidth, cameraHeight, 3)
-                seetaImageData!!.data = newBytes.clone()
+                seetaImageData!!.data = newBytes
 
                 var seetaTrackingFaceInfos = faceTracker?.Track(seetaImageData)
                 Log.d("dovt4", "register: " + seetaTrackingFaceInfos?.size)
@@ -351,6 +364,9 @@ class MainActivity : AppCompatActivity() {
             encodeYUV420SP(yuv, argb, inputWidth, inputHeight)
             scaled.recycle()
             return yuv
+        }
+        fun jpegToBitmap(jpegData: ByteArray): Bitmap{
+            return BitmapFactory.decodeByteArray(jpegData, 0, jpegData.size)
         }
 
         fun encodeYUV420SP(yuv420sp: ByteArray, argb: IntArray, width: Int, height: Int) {
