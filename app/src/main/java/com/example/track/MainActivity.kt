@@ -4,15 +4,23 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.*
 import android.hardware.Camera
+import android.hardware.Camera.PictureCallback
 import android.os.Bundle
 import android.util.Log
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import android.widget.Button
+import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.track.database.AppDatabase
+import com.example.track.database.Feature
 import com.example.track.seeta6.*
+import com.google.gson.Gson
 import java.io.IOException
+import java.util.*
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,9 +28,13 @@ class MainActivity : AppCompatActivity() {
     var camera: Camera? = null
     var surfaceView: SurfaceView? = null
     var surfaceView_view: SurfaceView? = null
+    var btnCapture: Button? = null
+    var container: FrameLayout? = null
     var faceTracker: FaceTracker? = null
     var faceLandmarker: FaceLandmarker? = null
     var faceDetector: FaceDetector? = null
+    var faceRecognizer: FaceRecognizer? = null
+    var db: AppDatabase? = null
     var canvas: Canvas? = null
     var cameraWidth = 640
     var cameraHeight = 480
@@ -31,6 +43,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        btnCapture = findViewById(R.id.btnCapture)
+        container = findViewById(R.id.container)
         surfaceView = findViewById(R.id.surfaceView)
         surfaceView_view = findViewById(R.id.surfaceView_view)
         surfaceView_view?.setZOrderMediaOverlay(true)
@@ -45,10 +59,13 @@ class MainActivity : AppCompatActivity() {
         faceDetector = FaceDetector(this@MainActivity)
         faceTracker = FaceTracker(this@MainActivity, cameraWidth, cameraHeight)
         faceLandmarker = FaceLandmarker(this@MainActivity)
+        faceRecognizer = FaceRecognizer(this@MainActivity)
 
         surfaceholder = surfaceView?.holder
         surfaceholder?.addCallback(callback)
         surfaceholder?.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS)
+
+        db = db?.getDatabase(this@MainActivity)
 
     }
 
@@ -72,9 +89,10 @@ class MainActivity : AppCompatActivity() {
                     var seetaTrackingFaceInfos = faceTracker?.Track(seetaImageData)
 
                     if (seetaTrackingFaceInfos?.size!! > 0) {
-
+                        register("dovt", seetaImageData)
                         var seetaRect = SeetaRect()
                         var seetaPointFs = Array(5) {SeetaPointF()}
+                        var features = FloatArray(faceRecognizer!!.GetExtractFeatureSize())
 
                         for (stTFInfo in seetaTrackingFaceInfos!!) {
 
@@ -83,8 +101,12 @@ class MainActivity : AppCompatActivity() {
                             seetaRect.width = stTFInfo.width
                             seetaRect.height = stTFInfo.height
                             faceLandmarker?.mark(seetaImageData, seetaRect, seetaPointFs)
-                            Log.d("dovt1: ", "seetaPointFs: " + seetaPointFs.size)
+                            faceRecognizer?.Extract(seetaImageData, seetaPointFs, features)
+                            var sim = faceRecognizer?.CalculateSimilarity( features, features)
+                            Log.d("dovt5", "sim: " + sim)
+                            if (sim != null && sim >=0.74) {
 
+                            }
                             val maxRect = Rect(
                                 stTFInfo!!.x,
                                 stTFInfo.y,
@@ -163,9 +185,51 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
                 camera?.startPreview()
+                btnCapture?.setOnClickListener{
+                    var featureCapture = takePictureInternal(camera!!)
+                }
             } catch (e: IOException) {
                 Log.d("TAG", "Error setting camera preview: " + e.message)
             }
+        }
+        fun takePictureInternal(camera: Camera) : FloatArray {
+
+            var features = FloatArray(faceRecognizer!!.GetExtractFeatureSize())
+
+            camera?.takePicture(null, null, Camera.PictureCallback { data, camera ->
+                val gson = Gson()
+
+                var newBytes = yuv2rgb(data, cameraWidth, cameraHeight)
+
+                var seetaImageData = SeetaImageData(cameraWidth, cameraHeight, 3)
+                seetaImageData!!.data = newBytes.clone()
+
+                var seetaTrackingFaceInfos = faceTracker?.Track(seetaImageData)
+                Log.d("dovt4", "register: " + seetaTrackingFaceInfos?.size)
+
+                if (seetaTrackingFaceInfos?.size!! > 0) {
+
+                    var seetaRect = SeetaRect()
+                    var seetaPointFs = Array(5) { SeetaPointF() }
+
+
+                    for (stTFInfo in seetaTrackingFaceInfos!!) {
+                        seetaRect.x = stTFInfo!!.x
+                        seetaRect.y = stTFInfo.y
+                        seetaRect.width = stTFInfo.width
+                        seetaRect.height = stTFInfo.height
+                        faceLandmarker?.mark(seetaImageData, seetaRect, seetaPointFs)
+                        faceRecognizer?.Extract(seetaImageData, seetaPointFs, features)
+
+                        var feature = Feature(randomID(),randomUUID(),"dovt", features.toString())
+                        //db?.featuresDao()?.insertFeature(feature)
+                    }
+                }
+
+                camera.cancelAutoFocus()
+                camera.startPreview()
+            })
+            return features
         }
 
         override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
@@ -200,6 +264,41 @@ class MainActivity : AppCompatActivity() {
             camera?.stopPreview()
             camera?.release()
             camera = null
+        }
+
+        fun register(name: String, seetaImageData: SeetaImageData){
+
+            val gson = Gson()
+
+//            var bmp = BitmapFactory.decodeResource(resources, R.drawable.face3)
+//            var face1Bytes = getNV21(bmp.width, bmp.height, bmp)
+//
+//            var newBytes = yuv2rgb(face1Bytes, cameraWidth, cameraHeight)
+
+            //var seetaImageData = SeetaImageData(cameraWidth, cameraHeight, 3)
+            //seetaImageData!!.data = newBytes.clone()
+
+            var seetaTrackingFaceInfos = faceTracker?.Track(seetaImageData)
+            Log.d("dovt4", "register: " + seetaTrackingFaceInfos?.size)
+
+            if (seetaTrackingFaceInfos?.size!! > 0) {
+
+                var seetaRect = SeetaRect()
+                var seetaPointFs = Array(5) { SeetaPointF() }
+                var features = FloatArray(faceRecognizer!!.GetExtractFeatureSize())
+
+                for (stTFInfo in seetaTrackingFaceInfos!!) {
+                    seetaRect.x = stTFInfo!!.x
+                    seetaRect.y = stTFInfo.y
+                    seetaRect.width = stTFInfo.width
+                    seetaRect.height = stTFInfo.height
+                    faceLandmarker?.mark(seetaImageData, seetaRect, seetaPointFs)
+                    faceRecognizer?.Extract(seetaImageData, seetaPointFs, features)
+
+                    var feature = Feature(randomID(),randomUUID(),name, features.toString())
+                    db?.featuresDao()?.insertFeature(feature)
+                }
+            }
         }
 
         fun yuv2rgb(yuv: ByteArray, width: Int, height: Int): ByteArray {
@@ -245,5 +344,55 @@ class MainActivity : AppCompatActivity() {
             return listRgb.toByteArray()
         }
 
+        fun getNV21(inputWidth: Int, inputHeight: Int, scaled: Bitmap): ByteArray {
+            val argb = IntArray(inputWidth * inputHeight)
+            scaled.getPixels(argb, 0, inputWidth, 0, 0, inputWidth, inputHeight)
+            val yuv = ByteArray(inputWidth * inputHeight * 3 / 2)
+            encodeYUV420SP(yuv, argb, inputWidth, inputHeight)
+            scaled.recycle()
+            return yuv
+        }
+
+        fun encodeYUV420SP(yuv420sp: ByteArray, argb: IntArray, width: Int, height: Int) {
+            val frameSize = width * height
+            var yIndex = 0
+            var uvIndex = frameSize
+            var a: Int
+            var R: Int
+            var G: Int
+            var B: Int
+            var Y: Int
+            var U: Int
+            var V: Int
+            var index = 0
+            for (j in 0 until height) {
+                for (i in 0 until width) {
+                    a = argb[index] and -0x1000000 shr 24 // a is not used obviously
+                    R = argb[index] and 0xff0000 shr 16
+                    G = argb[index] and 0xff00 shr 8
+                    B = argb[index] and 0xff shr 0
+
+// well known RGB to YUV algorithm
+                    Y = (66 * R + 129 * G + 25 * B + 128 shr 8) + 16
+                    U = (-38 * R - 74 * G + 112 * B + 128 shr 8) + 128
+                    V = (112 * R - 94 * G - 18 * B + 128 shr 8) + 128
+
+// NV21 has a plane of Y and interleaved planes of VU each sampled by a factor of 2
+
+// meaning for every 4 Y pixels there are 1 V and 1 U. Note the sampling is every other
+
+// pixel AND every other scanline.
+                    yuv420sp[yIndex++] = (if (Y < 0) 0 else if (Y > 255) 255 else Y).toByte()
+                    if (j % 2 == 0 && index % 2 == 0) {
+                        yuv420sp[uvIndex++] = (if (V < 0) 0 else if (V > 255) 255 else V).toByte()
+                        yuv420sp[uvIndex++] = (if (U < 0) 0 else if (U > 255) 255 else U).toByte()
+                    }
+                    index++
+                }
+            }
+        }
+
+        fun randomUUID() = UUID.randomUUID().toString()
+        fun randomID(): Long = Math.random().toLong()
     }
 }

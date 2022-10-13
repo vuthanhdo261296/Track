@@ -47,7 +47,7 @@ class FaceRecognizer {
     external fun ExtractCroppedFace(face: SeetaImageData?, features: FloatArray?): Boolean
     external fun Extract(
         image: SeetaImageData?,
-        points: Array<SeetaPointF?>?,
+        points: Array<SeetaPointF>,
         features: FloatArray?
     ): Boolean
 

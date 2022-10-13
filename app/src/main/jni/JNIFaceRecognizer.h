@@ -20,7 +20,7 @@ JNIEXPORT void JNICALL Java_com_example_track_seeta6_FaceRecognizer_construct__L
  * Method:    construct
  * Signature: (Ljava/lang/String;Ljava/lang/String;I)V
  */
-JNIEXPORT void JNICALL Java_com_example_track_seeta6_FaceRecognizer_construct1__Ljava_lang_String_2Ljava_lang_String_2I
+JNIEXPORT void JNICALL Java_com_example_track_seeta6_FaceRecognizer_construct1
   (JNIEnv *, jobject, jstring);
 
 /*

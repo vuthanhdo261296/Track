@@ -81,7 +81,7 @@ JNIEXPORT void JNICALL Java_com_example_track_seeta6_FaceRecognizer_construct__L
 	env->SetLongField(self, self_filed_impl, self_impl); 
   }
   
-  JNIEXPORT void JNICALL Java_com_example_track_seeta6_FaceRecognizer_construct1__Ljava_lang_String_2Ljava_lang_String_2I
+  JNIEXPORT void JNICALL Java_com_example_track_seeta6_FaceRecognizer_construct1
   (JNIEnv *env, jobject self, jstring model)
   {
 	std::string native_model = jni_convert_string(env, model);
