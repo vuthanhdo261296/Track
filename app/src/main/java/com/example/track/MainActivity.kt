@@ -34,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     var container: FrameLayout? = null
     var faceTracker: FaceTracker? = null
     var faceLandmarker: FaceLandmarker? = null
+    var poseEstimator: PoseEstimator? = null
     //var faceDetector: FaceDetector? = null
     var faceRecognizer: FaceRecognizer? = null
     var db: AppDatabase? = null
@@ -62,6 +63,7 @@ class MainActivity : AppCompatActivity() {
         faceTracker = FaceTracker(this@MainActivity, cameraWidth, cameraHeight)
         faceLandmarker = FaceLandmarker(this@MainActivity)
         faceRecognizer = FaceRecognizer(this@MainActivity)
+        poseEstimator = PoseEstimator(this@MainActivity)
 
         surfaceholder = surfaceView?.holder
         surfaceholder?.addCallback(callback)
@@ -94,6 +96,10 @@ class MainActivity : AppCompatActivity() {
                 var feature = FloatArray(faceRecognizer!!.GetExtractFeatureSize())
                 var featureCapture = FloatArray(faceRecognizer!!.GetExtractFeatureSize())
 
+                var yaw = FloatArray(1)
+                var pitch = FloatArray(1)
+                var roll = FloatArray(1)
+
                 camera?.setPreviewCallback { bytes, camera ->
 
                     var newBytes = yuv2rgb(bytes, cameraWidth, cameraHeight)
@@ -113,6 +119,10 @@ class MainActivity : AppCompatActivity() {
                             seetaRect.height = stTFInfo.height
 
                             faceLandmarker?.mark(seetaImageData, seetaRect, seetaPointFs)
+                            poseEstimator?.Estimate(seetaImageData, seetaRect, yaw, pitch, roll)
+                            for(i in pitch){
+                                Log.d("dovt7", "yaw: " + i)
+                            }
                             faceRecognizer?.Extract(seetaImageData, seetaPointFs, feature)
                             var sim = faceRecognizer?.CalculateSimilarity( featureCapture, feature)
                             Log.d("dovt", "sim: " + sim)
